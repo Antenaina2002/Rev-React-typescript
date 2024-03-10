@@ -12,6 +12,7 @@ interface TaskManagerOperations {
   updateTask: (id: string, taskUpdate: Partial<Task>) => void;
   setSearchKeyword: (searchKeyword: string) => void;
   setTitle: (title: string) => void;
+  title: string;
   tasks: Task[];
   filteredTasks: Task[];
 }
@@ -53,14 +54,14 @@ export const useTaskManager = (): TaskManagerOperations => {
     task.title.toLowerCase().includes(searchKeyword.toLowerCase())
   );
 
-  return {
-    addTask,
-    completeTask,
-    updateTask,
-    setSearchKeyword: handleSearch,
-    setTitle,
-    title,
-    tasks,
-    filteredTasks,
-  };
+    return {
+        addTask,
+        completeTask,
+        updateTask,
+        setSearchKeyword: handleSearch,
+        setTitle,
+        title,
+        tasks,
+        filteredTasks,
+    };
 };
