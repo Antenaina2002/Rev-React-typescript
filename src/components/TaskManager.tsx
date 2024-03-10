@@ -41,6 +41,12 @@ export const TaskManager: React.FC = () => {
     setSearchKeyword(ev.target.value);
   };
 
+  const handleKeyPress = (ev: React.KeyboardEvent<HTMLInputElement>) => {
+    if (ev.key === "Enter") {
+      addTask();
+    }
+  };
+
   const filteredTasks = tasks.filter((task) =>
     task.title.toLowerCase().includes(searchKeyword.toLowerCase())
   );
@@ -50,7 +56,12 @@ export const TaskManager: React.FC = () => {
       <h1>Task Manager</h1>
 
       <div>
-        <input type="text" onChange={handleSearch} placeholder="Search Task" />
+        <input
+          type="text"
+          onChange={handleSearch}
+          onKeyPress={handleKeyPress} 
+          placeholder="Search Task"
+        />
       </div>
 
       <div className="task">
@@ -60,6 +71,7 @@ export const TaskManager: React.FC = () => {
           onChange={(ev) => {
             setTitle(ev.target.value);
           }}
+          onKeyPress={handleKeyPress} 
         />
 
         <button onClick={addTask}>Add Task</button>
