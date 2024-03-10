@@ -7,12 +7,22 @@ interface Task {
   title: string;
 }
 
-export const TaskManager: React.FC = () => {
+interface TaskManagerOperations {
+  addTask: (title: string) => void;
+  completeTask: (id: string) => void;
+  updateTask: (id: string, taskUpdate: Partial<Task>) => void;
+  setSearchKeyword: (searchKeyword: string) => void;
+  setTitle: (title: string) => void;
+  title: string;
+  tasks: Task[];
+  filteredTasks: Task[];
+}
+
+export const useTaskManager = (): TaskManagerOperations => {
   const [title, setTitle] = useState<string>("");
   const [searchKeyword, setSearchKeyword] = useState<string>("");
   const [tasks, setTasks] = useState<Task[]>([]);
 
-  // remove task from list
   const completeTask = (id: string) => {
     setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
   };
@@ -37,19 +47,44 @@ export const TaskManager: React.FC = () => {
     setTitle("");
   };
 
-  const handleSearch = (ev: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchKeyword(ev.target.value);
-  };
-
-  const handleKeyPress = (ev: React.KeyboardEvent<HTMLInputElement>) => {
-    if (ev.key === "Enter") {
-      addTask();
-    }
+  const handleSearch = (searchKeyword: string) => {
+    setSearchKeyword(searchKeyword);
   };
 
   const filteredTasks = tasks.filter((task) =>
     task.title.toLowerCase().includes(searchKeyword.toLowerCase())
   );
+
+  return {
+    addTask,
+    completeTask,
+    updateTask,
+    setSearchKeyword: handleSearch,
+    setTitle, 
+    title,
+    tasks,
+    filteredTasks,
+  };
+};
+
+
+export const TaskManager: React.FC = () => {
+  const {
+    addTask,
+    completeTask,
+    updateTask,
+    setSearchKeyword,
+    setTitle,
+    title,
+    tasks,
+    filteredTasks,
+  } = useTaskManager();
+
+  const handleKeyPress = (ev: React.KeyboardEvent<HTMLInputElement>) => {
+    if (ev.key === "Enter") {
+      addTask(title);
+    }
+  };
 
   return (
     <div className="container">
@@ -58,8 +93,8 @@ export const TaskManager: React.FC = () => {
       <div>
         <input
           type="text"
-          onChange={handleSearch}
-          onKeyPress={handleKeyPress} 
+          onChange={(ev) => setSearchKeyword(ev.target.value)}
+          onKeyPress={handleKeyPress}
           placeholder="Search Task"
         />
       </div>
@@ -68,13 +103,11 @@ export const TaskManager: React.FC = () => {
         <input
           type="text"
           value={title}
-          onChange={(ev) => {
-            setTitle(ev.target.value);
-          }}
-          onKeyPress={handleKeyPress} 
+          onChange={(ev) => setTitle(ev.target.value)}
+          onKeyPress={handleKeyPress}
         />
 
-        <button onClick={addTask}>Add Task</button>
+        <button onClick={() => addTask(title)}>Add Task</button>
       </div>
 
       <ul className="container">
